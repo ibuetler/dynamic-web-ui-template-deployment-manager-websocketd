@@ -2,7 +2,6 @@ import express from 'express';
 import path from 'path';
 import createError from 'http-errors';
 import bodyParser from 'body-parser';
-import apiMockRouter from './routes/apimock';
 import configRouter from './routes/config';
 import sitesRouter from './routes/sites';
 import toolsRouter from './routes/tools';
@@ -19,9 +18,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.locals.appName = config.appName;
 
 app.use((req, res, next) => {
-  if (!req.url.includes('apimock')) {
-    app.locals.current = req.url;
-  }
+  app.locals.current = req.url;
   next();
 });
 
@@ -31,7 +28,6 @@ mainRouter.get('/', (req, res) => {
   res.redirect('/tool');
 });
 app.use('/', mainRouter);
-app.use('/apimock', apiMockRouter);
 app.use('/config', configRouter);
 app.use('/tool', toolsRouter);
 app.use('/site', sitesRouter);

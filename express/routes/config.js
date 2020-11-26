@@ -1,52 +1,41 @@
 import express from 'express';
-import fetch from 'node-fetch';
-import configJson from '../config.json';
+import fs from 'fs';
 
-async function getConfigFromResponse(response) {
-  const parsed = await response.json();
-  return {
-    tenantId: parsed.tenant_id,
-    subscriptionId: parsed.subscription_id,
-    clientId: parsed.client_id,
-    clientSecret: parsed.client_secret,
-  };
-}
-
+const azureFilePath = '../data/azure.json';
 const configRouter = express.Router();
 
-configRouter.get('/', async (req, res) => {
-  try {
-    const response = await fetch(`${configJson.configUrl}`);
-    const config = await getConfigFromResponse(response);
-    res.render('config', { title: 'Configuration', config });
-  } catch (error) {
-    res.status(500);
-    res.render('error');
-  }
+function getConfigFromFile() {
+  let config = {};
+  return new Promise(resolve => {
+    fs.readFile(azureFilePath, (error, data) => {
+      if (!error) {
+        resolve(JSON.parse(data));
+      }
+      resolve(config);
+    });
+  });
+}
+
+configRouter.get('/raw', async (req, res) => {
+  const config = await getConfigFromFile();
+  res.send(config);
 });
 
-configRouter.post('/', async (req, res) => {
-  try {
-    const data = {
-      tenant_id: req.body.tenantId,
-      subscription_id: req.body.subscriptionId,
-      client_id: req.body.clientId,
-      client_secret: req.body.clientSecret,
-    };
-    const response = await fetch(`${configJson.configUrl}`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    const config = await getConfigFromResponse(response);
-    res.render('config', { title: 'Configuration', config });
-  } catch (error) {
-    res.status(500);
-    res.render('error', { ...error });
-  }
+configRouter.get('/', async (req, res) => {
+  const config = await getConfigFromFile();
+  res.render('config', { config });
+});
+
+configRouter.post('/', (req, res) => {
+  fs.writeFile(azureFilePath, JSON.stringify(req.body), async (error) => {
+    if (error) {
+      res.status(500);
+      res.render('error', { ...error });
+      return;
+    }
+    const config = await getConfigFromFile();
+    res.render('config', { config });
+  });
 });
 
 export default configRouter;
