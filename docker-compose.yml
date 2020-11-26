@@ -1,0 +1,13 @@
+version: '3.6'
+
+services:
+  websocketd:
+    build: ./websocketd/
+    image: hackinglab/websocketd:latest
+    ports:
+      - 80:80
+
+  express:
+    build: ./express/
+    image: hackinglab/express:latest
+

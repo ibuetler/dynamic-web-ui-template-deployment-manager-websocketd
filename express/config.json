@@ -1,0 +1,7 @@
+{
+    "apiUrl": "http://websocketd/static",
+    "configUrl": "http://websocketd/flask",
+    "wsUrl": "ws://localhost/api",
+    "verbose": "true",
+    "appName": "WinAttackLab Express"
+}
