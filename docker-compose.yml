@@ -1,12 +1,8 @@
 version: '2'
 
 services:
-  alpine-nginx-nodejs-websocketd:
+  alpine-nginx-nodejs-static-websocketd:
     build: .
-    image: hackinglab/alpine-nginx-nodejs-websocketd:3.2
-    environment:
-    - AUTHOR=e1
-    - HL_USER_USERNAME=hacker
-    - HL_USER_PASSWORD=compass
+    image: hackinglab/alpine-nginx-nodejs-static-websocketd:3.2
     ports:
       - 80:80
